@@ -45,7 +45,8 @@ namespace BibliotecaAPI.Controllers
 
             if (!author)
             {
-                return BadRequest($"Author with id {book.AuthorId} not found");
+                ModelState.AddModelError(nameof(book.AuthorId), $"Author with id {book.AuthorId} not found");
+                return ValidationProblem();
             }
 
             context.Add(book);

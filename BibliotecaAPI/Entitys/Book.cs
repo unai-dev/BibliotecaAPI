@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BibliotecaAPI.Validations;
+using System.ComponentModel.DataAnnotations;
 
 namespace BibliotecaAPI.Entitys
 {
@@ -7,7 +8,9 @@ namespace BibliotecaAPI.Entitys
 
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "The field {0} is required")]
+        [StringLength(400 ,MinimumLength = 3)]
+        [FirstUpperLetter]
         public required string Title { get; set; }
 
         public int AuthorId { get; set; }
