@@ -1,4 +1,5 @@
 using BibliotecaAPI.Data;
+using BibliotecaAPI.Middlewares;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -15,6 +16,9 @@ builder.Services.AddDbContext<AplicationDbContext>(options => options.UseSqlServ
 var app = builder.Build();
 
 // MIDDLEWARERS AREA
+
+app.UseLoggerRequest();
+app.UseBlockedPath();
 
 app.MapControllers();
 

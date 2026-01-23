@@ -24,7 +24,7 @@ namespace BibliotecaAPI.Controllers
         {
             return await context.Authors.ToListAsync();
         }
-
+         
         [HttpGet("first")]
         public async Task<Author> GetFirst()
         {
