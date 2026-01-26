@@ -24,7 +24,7 @@ namespace BibliotecaAPI.Controllers
             return await context.Authors.ToListAsync();
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:int}", Name = "GetAuthor")]
         public async Task<ActionResult<Author>> Get(int id)
         {
             var author = await context.Authors
@@ -44,7 +44,7 @@ namespace BibliotecaAPI.Controllers
         {
             context.Add(author);
             await context.SaveChangesAsync();
-            return Created();
+            return CreatedAtRoute("GetAuthor", new {id = author.Id}, author);
 
         }
 

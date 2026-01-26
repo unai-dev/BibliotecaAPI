@@ -10,7 +10,13 @@ namespace BibliotecaAPI.Entitys
         [Required(ErrorMessage = "The field {0} is required")]
         [StringLength(150, ErrorMessage = "The field {0} must contain {1} chars or less")]
         [FirstUpperLetter]
-        public required string Name { get; set; }
+        public required string Names { get; set; }
+        [Required(ErrorMessage = "The field {0} is required")]
+        [StringLength(150, ErrorMessage = "The field {0} must contain {1} chars or less")]
+        [FirstUpperLetter]
+        public required string Surnames { get; set; }
+        [StringLength(20, ErrorMessage = "The field {0} must contain {1} chars or less")]
+        public string? Identity { get; set; }
 
         public List<Book> Books { get; set; } = new List<Book>();
 
