@@ -19,20 +19,13 @@ namespace BibliotecaAPI.Controllers
         }
 
         [HttpGet]
-        [HttpGet("/list")]
         public async Task<IEnumerable<Author>> Get()
         {
             return await context.Authors.ToListAsync();
         }
-         
-        [HttpGet("first")]
-        public async Task<Author> GetFirst()
-        {
-            return await context.Authors.FirstAsync();
-        }
 
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<Author>> Get([FromRoute] int id, [FromQuery] bool includeBooks)
+        public async Task<ActionResult<Author>> Get(int id)
         {
             var author = await context.Authors
                 .Include(x => x.Books)
@@ -46,16 +39,8 @@ namespace BibliotecaAPI.Controllers
             return author;
         }
 
-        [HttpGet("{name:alpha}")]
-
-        public async Task<IEnumerable<Author>> Get(string name)
-        {
-            return await context.Authors.Where(x => x.Name.Contains(name)).ToListAsync();
-
-        }
-
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] Author author)
+        public async Task<ActionResult> Post(Author author)
         {
             context.Add(author);
             await context.SaveChangesAsync();

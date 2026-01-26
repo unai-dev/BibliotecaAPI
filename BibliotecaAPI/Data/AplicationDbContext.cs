@@ -9,6 +9,10 @@ namespace BibliotecaAPI.Data
         {
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+        }
 
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }

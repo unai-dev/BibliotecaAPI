@@ -9,7 +9,7 @@ namespace BibliotecaAPI.Entitys
         public int Id { get; set; }
 
         [Required(ErrorMessage = "The field {0} is required")]
-        [StringLength(400 ,MinimumLength = 3)]
+        [StringLength(350 ,MinimumLength = 3, ErrorMessage = "The field {0} must contain {1} chars or less")]
         [FirstUpperLetter]
         public required string Title { get; set; }
 
