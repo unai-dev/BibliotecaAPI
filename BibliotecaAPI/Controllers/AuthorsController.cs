@@ -1,4 +1,6 @@
-﻿using BibliotecaAPI.Data;
+﻿using AutoMapper;
+using BibliotecaAPI.Data;
+using BibliotecaAPI.DTOs;
 using BibliotecaAPI.Entitys;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,16 +14,20 @@ namespace BibliotecaAPI.Controllers
     public class AuthorsController : ControllerBase
     {
         private readonly AplicationDbContext context;
+        private readonly IMapper mapper;
 
-        public AuthorsController(AplicationDbContext context)
+        public AuthorsController(AplicationDbContext context, IMapper mapper)
         {
             this.context = context;
+            this.mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Author>> Get()
+        public async Task<IEnumerable<AuthorsDTO>> Get()
         {
-            return await context.Authors.ToListAsync();
+            var authors = await context.Authors.ToListAsync();
+            var authorsDTO = mapper.Map<IEnumerable<AuthorsDTO>>(authors);
+            return authorsDTO;
         }
 
         [HttpGet("{id:int}", Name = "GetAuthor")]
@@ -44,7 +50,7 @@ namespace BibliotecaAPI.Controllers
         {
             context.Add(author);
             await context.SaveChangesAsync();
-            return CreatedAtRoute("GetAuthor", new {id = author.Id}, author);
+            return CreatedAtRoute("GetAuthor", new { id = author.Id }, author);
 
         }
 
