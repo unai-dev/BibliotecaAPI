@@ -11,6 +11,10 @@ namespace BibliotecaAPI.Utils
             CreateMap<Author, AuthorsDTO>()
                 .ForMember(dto => dto.FullName, config => config.MapFrom(
                     author => $"{author.Names} {author.Surnames}"));
+
+            CreateMap<AuthorCreationDTO, Author>();
+            CreateMap<Book, BooksDTO>();
+            CreateMap<BookCreationDTO, Book>();
         }
     }
 }

@@ -31,7 +31,7 @@ namespace BibliotecaAPI.Controllers
         }
 
         [HttpGet("{id:int}", Name = "GetAuthor")]
-        public async Task<ActionResult<Author>> Get(int id)
+        public async Task<ActionResult<AuthorsDTO>> Get(int id)
         {
             var author = await context.Authors
                 .Include(x => x.Books)
@@ -42,25 +42,29 @@ namespace BibliotecaAPI.Controllers
                 return NotFound($"Author with id {id} not found");
             }
 
-            return author;
+            var authorDTO = mapper.Map<AuthorsDTO>(author);
+
+            return authorDTO;
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post(Author author)
+        public async Task<ActionResult> Post(AuthorCreationDTO authorCreationDTO)
         {
+            var author = mapper.Map<Author>(authorCreationDTO);
+
             context.Add(author);
             await context.SaveChangesAsync();
-            return CreatedAtRoute("GetAuthor", new { id = author.Id }, author);
+            var authorDTO = mapper.Map<AuthorsDTO>(author);
+
+            return CreatedAtRoute("GetAuthor", new { id = author.Id }, authorDTO);
 
         }
 
         [HttpPut("{id:int}")]
-        public async Task<ActionResult> Put(int id, Author author)
+        public async Task<ActionResult> Put(int id, AuthorCreationDTO authorCreationDTO)
         {
-            if (id != author.Id)
-            {
-                return BadRequest($"The id's not same {id}");
-            }
+            var author = mapper.Map<Author>(authorCreationDTO);
+            author.Id = id;
             context.Update(author);
             await context.SaveChangesAsync();
             return Accepted();
