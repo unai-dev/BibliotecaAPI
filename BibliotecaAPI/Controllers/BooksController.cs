@@ -32,7 +32,7 @@ namespace BibliotecaAPI.Controllers
         }
 
         [HttpGet("{id:int}", Name ="GetBook")]
-        public async Task<ActionResult<BooksDTO>> Get(int id)
+        public async Task<ActionResult<BookWithAuthorDTO>> Get(int id)
         {
 
             var book = await context.Books
@@ -44,7 +44,7 @@ namespace BibliotecaAPI.Controllers
                 return NotFound($"Book with id {id} not found");
             }
 
-            var bookDTO = mapper.Map<BooksDTO>(book);
+            var bookDTO = mapper.Map<BookWithAuthorDTO>(book);
             return bookDTO;
         }
 
@@ -83,7 +83,7 @@ namespace BibliotecaAPI.Controllers
 
             context.Update(book);
             await context.SaveChangesAsync();
-            return Accepted();
+            return NoContent();
         }
 
         [HttpDelete("{id:int}")]
