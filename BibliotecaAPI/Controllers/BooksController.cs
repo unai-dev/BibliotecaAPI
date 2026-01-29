@@ -36,7 +36,7 @@ namespace BibliotecaAPI.Controllers
         {
 
             var book = await context.Books
-                .Include(x => x.Author).
+                .Include(x => x.Authors).
                 FirstOrDefaultAsync(x => x.Id == id);
 
             if (book is null)
@@ -48,43 +48,43 @@ namespace BibliotecaAPI.Controllers
             return bookDTO;
         }
 
-        [HttpPost]
-        public async Task<ActionResult<BookCreationDTO>> Post(BookCreationDTO bookCreationDTO)
-        {
-            var book = mapper.Map<Book>(bookCreationDTO);
-            var author = await context.Authors.AnyAsync(x => x.Id == book.AuthorId);
+        //[HttpPost]
+        //public async Task<ActionResult<BookCreationDTO>> Post(BookCreationDTO bookCreationDTO)
+        //{
+        //    var book = mapper.Map<Book>(bookCreationDTO);
+        //    var author = await context.Authors.AnyAsync(x => x.Id == book.AuthorId);
 
-            if (!author)
-            {
-                ModelState.AddModelError(nameof(book.AuthorId), $"Author with id {book.AuthorId} not found");
-                return ValidationProblem();
-            }
+        //    if (!author)
+        //    {
+        //        ModelState.AddModelError(nameof(book.AuthorId), $"Author with id {book.AuthorId} not found");
+        //        return ValidationProblem();
+        //    }
 
-            context.Add(book);
-            await context.SaveChangesAsync();
+        //    context.Add(book);
+        //    await context.SaveChangesAsync();
 
-            var bookDTO = mapper.Map<BooksDTO>(book);
+        //    var bookDTO = mapper.Map<BooksDTO>(book);
 
-            return CreatedAtRoute("GetBook", new {id = book.Id}, bookDTO);
-        }
+        //    return CreatedAtRoute("GetBook", new {id = book.Id}, bookDTO);
+        //}
 
-        [HttpPut("{id:int}")]
-        public async Task<ActionResult<BookCreationDTO>> Put(int id, BookCreationDTO bookCreationDTO)
-        {
-            var book = mapper.Map<Book>(bookCreationDTO);
-            book.Id = id;
+        //[HttpPut("{id:int}")]
+        //public async Task<ActionResult<BookCreationDTO>> Put(int id, BookCreationDTO bookCreationDTO)
+        //{
+        //    var book = mapper.Map<Book>(bookCreationDTO);
+        //    book.Id = id;
 
-            var author = await context.Authors.AnyAsync(x => x.Id == book.AuthorId);
+        //    var author = await context.Authors.AnyAsync(x => x.Id == book.AuthorId);
 
-            if (!author)
-            {
-                return BadRequest($"Author with id {book.AuthorId} not found");
-            }
+        //    if (!author)
+        //    {
+        //        return BadRequest($"Author with id {book.AuthorId} not found");
+        //    }
 
-            context.Update(book);
-            await context.SaveChangesAsync();
-            return NoContent();
-        }
+        //    context.Update(book);
+        //    await context.SaveChangesAsync();
+        //    return NoContent();
+        //}
 
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> Delete(int id)

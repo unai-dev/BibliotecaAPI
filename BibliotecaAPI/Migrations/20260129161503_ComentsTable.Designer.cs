@@ -4,6 +4,7 @@ using BibliotecaAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BibliotecaAPI.Migrations
 {
     [DbContext(typeof(AplicationDbContext))]
-    partial class AplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260129161503_ComentsTable")]
+    partial class ComentsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,24 +52,6 @@ namespace BibliotecaAPI.Migrations
                     b.ToTable("Authors");
                 });
 
-            modelBuilder.Entity("BibliotecaAPI.Entitys.AuthorBook", b =>
-                {
-                    b.Property<int>("AuthorId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BookId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("int");
-
-                    b.HasKey("AuthorId", "BookId");
-
-                    b.HasIndex("BookId");
-
-                    b.ToTable("AuthorsBook");
-                });
-
             modelBuilder.Entity("BibliotecaAPI.Entitys.Book", b =>
                 {
                     b.Property<int>("Id")
@@ -75,12 +60,17 @@ namespace BibliotecaAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AuthorId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(350)
                         .HasColumnType("nvarchar(350)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
 
                     b.ToTable("Books");
                 });
@@ -108,7 +98,7 @@ namespace BibliotecaAPI.Migrations
                     b.ToTable("Coments");
                 });
 
-            modelBuilder.Entity("BibliotecaAPI.Entitys.AuthorBook", b =>
+            modelBuilder.Entity("BibliotecaAPI.Entitys.Book", b =>
                 {
                     b.HasOne("BibliotecaAPI.Entitys.Author", "Author")
                         .WithMany("Books")
@@ -116,15 +106,7 @@ namespace BibliotecaAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BibliotecaAPI.Entitys.Book", "Book")
-                        .WithMany("Authors")
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Author");
-
-                    b.Navigation("Book");
                 });
 
             modelBuilder.Entity("BibliotecaAPI.Entitys.Coments", b =>
@@ -145,8 +127,6 @@ namespace BibliotecaAPI.Migrations
 
             modelBuilder.Entity("BibliotecaAPI.Entitys.Book", b =>
                 {
-                    b.Navigation("Authors");
-
                     b.Navigation("Coments");
                 });
 #pragma warning restore 612, 618

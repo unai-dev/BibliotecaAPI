@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
+using Azure;
 using BibliotecaAPI.Data;
 using BibliotecaAPI.DTOs;
 using BibliotecaAPI.Entitys;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 
 namespace BibliotecaAPI.Controllers
 {
@@ -65,8 +66,10 @@ namespace BibliotecaAPI.Controllers
         {
             var author = mapper.Map<Author>(authorCreationDTO);
             author.Id = id;
+
             context.Update(author);
             await context.SaveChangesAsync();
+
             return NoContent();
         }
 

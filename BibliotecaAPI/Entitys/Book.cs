@@ -13,9 +13,8 @@ namespace BibliotecaAPI.Entitys
         [FirstUpperLetter]
         public required string Title { get; set; }
 
-        public int AuthorId { get; set; }
-
-        public Author? Author { get; set; }
+        public List<AuthorBook> Authors { get; set; } = [];
+        public List<Coments> Coments { get; set; } = [];
 
 
 
