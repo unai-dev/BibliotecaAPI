@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿    using AutoMapper;
 using BibliotecaAPI.Data;
 using BibliotecaAPI.DTOs;
 using BibliotecaAPI.Entitys;
@@ -36,8 +36,8 @@ namespace BibliotecaAPI.Controllers
         {
 
             var book = await context.Books
-                .Include(x => x.Authors).
-                FirstOrDefaultAsync(x => x.Id == id);
+                .Include(x => x.Authors).ThenInclude(x => x.Author)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if (book is null)
             {
@@ -48,43 +48,76 @@ namespace BibliotecaAPI.Controllers
             return bookDTO;
         }
 
-        //[HttpPost]
-        //public async Task<ActionResult<BookCreationDTO>> Post(BookCreationDTO bookCreationDTO)
-        //{
-        //    var book = mapper.Map<Book>(bookCreationDTO);
-        //    var author = await context.Authors.AnyAsync(x => x.Id == book.AuthorId);
+        [HttpPost]
+        public async Task<ActionResult<BookCreationDTO>> Post(BookCreationDTO bookCreationDTO)
+        {
+            if (bookCreationDTO.AuthorsIds is null || bookCreationDTO.AuthorsIds.Count == 0)
+            {
+                ModelState.AddModelError(nameof(bookCreationDTO.AuthorsIds), "Authors missing");
+                return ValidationProblem();
+            }
 
-        //    if (!author)
-        //    {
-        //        ModelState.AddModelError(nameof(book.AuthorId), $"Author with id {book.AuthorId} not found");
-        //        return ValidationProblem();
-        //    }
+            var authorsId = await context.Authors.Where(x => bookCreationDTO.AuthorsIds.Contains(x.Id))
+                .Select(x => x.Id).ToListAsync();
+            
+            if (authorsId.Count != bookCreationDTO.AuthorsIds.Count)
+            {
+                var authorsNot = bookCreationDTO.AuthorsIds.Except(authorsId);
+                var authorsNotFound = string.Join(",", authorsNot);
+                var errorMessage = $"This authors not exists {authorsNotFound}";
 
-        //    context.Add(book);
-        //    await context.SaveChangesAsync();
+                ModelState.AddModelError(nameof(bookCreationDTO.AuthorsIds), errorMessage);
+                return ValidationProblem();
+            }
 
-        //    var bookDTO = mapper.Map<BooksDTO>(book);
+            var book = mapper.Map<Book>(bookCreationDTO);
+            AddOrderAuthors(book);
+            
 
-        //    return CreatedAtRoute("GetBook", new {id = book.Id}, bookDTO);
-        //}
+            context.Add(book);
+            await context.SaveChangesAsync();
 
-        //[HttpPut("{id:int}")]
-        //public async Task<ActionResult<BookCreationDTO>> Put(int id, BookCreationDTO bookCreationDTO)
-        //{
-        //    var book = mapper.Map<Book>(bookCreationDTO);
-        //    book.Id = id;
+            var bookDTO = mapper.Map<BooksDTO>(book);
 
-        //    var author = await context.Authors.AnyAsync(x => x.Id == book.AuthorId);
+            return CreatedAtRoute("GetBook", new { id = book.Id }, bookDTO);
+        }
 
-        //    if (!author)
-        //    {
-        //        return BadRequest($"Author with id {book.AuthorId} not found");
-        //    }
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult<BookCreationDTO>> Put(int id, BookCreationDTO bookCreationDTO)
+        {
+            if (bookCreationDTO.AuthorsIds is null || bookCreationDTO.AuthorsIds.Count == 0)
+            {
+                ModelState.AddModelError(nameof(bookCreationDTO.AuthorsIds), "Authors missing");
+                return ValidationProblem();
+            }
 
-        //    context.Update(book);
-        //    await context.SaveChangesAsync();
-        //    return NoContent();
-        //}
+            var authorsId = await context.Authors.Where(x => bookCreationDTO.AuthorsIds.Contains(x.Id))
+                .Select(x => x.Id).ToListAsync();
+
+            if (authorsId.Count != bookCreationDTO.AuthorsIds.Count)
+            {
+                var authorsNot = bookCreationDTO.AuthorsIds.Except(authorsId);
+                var authorsNotFound = string.Join(",", authorsNot);
+                var errorMessage = $"This authors not exists {authorsNotFound}";
+
+                ModelState.AddModelError(nameof(bookCreationDTO.AuthorsIds), errorMessage);
+                return ValidationProblem();
+            }
+
+            var bookDB = await context.Books.
+                Include(x => x.Authors).FirstOrDefaultAsync(x => x.Id == id);
+
+            if (bookDB is null)
+            {
+                return NotFound();
+            }
+
+            bookDB = mapper.Map(bookCreationDTO, bookDB);
+            AddOrderAuthors(bookDB);
+
+            await context.SaveChangesAsync();
+            return NoContent();
+        }
 
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> Delete(int id)
@@ -97,6 +130,19 @@ namespace BibliotecaAPI.Controllers
             }
 
             return NoContent();
+        }
+
+
+
+        private void AddOrderAuthors(Book book)
+        {
+            if (book.Authors is not null)
+            {
+                for (int i = 0; i < book.Authors.Count; i++)
+                {
+                    book.Authors[i].Order = i;
+                }
+            }
         }
     }
 }

@@ -16,5 +16,7 @@ namespace BibliotecaAPI.DTOs
         [StringLength(20, ErrorMessage = "The field {0} must contain {1} chars or less")]
         public string? Identity { get; set; }
 
+        public List<BookCreationDTO> Books { get; set; } = [];
+
     }
 }

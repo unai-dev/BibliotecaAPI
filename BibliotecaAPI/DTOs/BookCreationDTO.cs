@@ -11,7 +11,7 @@ namespace BibliotecaAPI.DTOs
         [StringLength(350, MinimumLength = 3, ErrorMessage = "The field {0} must contain {1} chars or less")]
         [FirstUpperLetter]
         public required string Title { get; set; }
-        public int AuthorId { get; set; }
+        public List<int> AuthorsIds { get; set; } = [];
 
     }
 }

@@ -2,7 +2,6 @@
 {
     public class BookWithAuthorDTO: BooksDTO
     {
-        public int AuthorId { get; set; }
-        public required string AuthorName { get; set; }
+        public List<AuthorsDTO> Authors { get; set; } = [];
     }
 }

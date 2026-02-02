@@ -35,7 +35,7 @@ namespace BibliotecaAPI.Controllers
         public async Task<ActionResult<AuthorsWithBooksDTO>> Get(int id)
         {
             var author = await context.Authors
-                .Include(x => x.Books)
+                .Include(x => x.Books).ThenInclude(x => x.Book)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (author is null)
