@@ -1,4 +1,7 @@
-﻿namespace BibliotecaAPI.DTOs
+﻿using BibliotecaAPI.DTOs.Authors;
+using BibliotecaAPI.DTOs.Books;
+
+namespace BibliotecaAPI.DTOs.AuthorsBooks
 {
     public class BookWithAuthorDTO: BooksDTO
     {

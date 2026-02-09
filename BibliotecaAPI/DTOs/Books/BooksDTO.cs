@@ -1,4 +1,4 @@
-﻿namespace BibliotecaAPI.DTOs
+﻿namespace BibliotecaAPI.DTOs.Books
 {
     public class BooksDTO
     {

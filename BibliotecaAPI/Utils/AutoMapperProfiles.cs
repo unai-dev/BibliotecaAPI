@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
-using BibliotecaAPI.DTOs;
+using BibliotecaAPI.DTOs.Authors;
+using BibliotecaAPI.DTOs.AuthorsBooks;
+using BibliotecaAPI.DTOs.Books;
+using BibliotecaAPI.DTOs.Coments;
 using BibliotecaAPI.Entitys;
 
 namespace BibliotecaAPI.Utils

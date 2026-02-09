@@ -2,7 +2,7 @@
 using BibliotecaAPI.Validations;
 using System.ComponentModel.DataAnnotations;
 
-namespace BibliotecaAPI.DTOs
+namespace BibliotecaAPI.DTOs.Books
 {
     public class BookCreationDTO
     {

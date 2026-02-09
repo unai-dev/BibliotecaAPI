@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using BibliotecaAPI.Data;
-using BibliotecaAPI.DTOs;
+using BibliotecaAPI.DTOs.Coments;
 using BibliotecaAPI.Entitys;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

@@ -1,6 +1,7 @@
-﻿    using AutoMapper;
+﻿using AutoMapper;
 using BibliotecaAPI.Data;
-using BibliotecaAPI.DTOs;
+using BibliotecaAPI.DTOs.AuthorsBooks;
+using BibliotecaAPI.DTOs.Books;
 using BibliotecaAPI.Entitys;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

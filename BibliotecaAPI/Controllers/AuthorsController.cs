@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using Azure;
 using BibliotecaAPI.Data;
-using BibliotecaAPI.DTOs;
+using BibliotecaAPI.DTOs.Authors;
+using BibliotecaAPI.DTOs.AuthorsBooks;
 using BibliotecaAPI.Entitys;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;

@@ -1,7 +1,8 @@
-﻿using BibliotecaAPI.Validations;
+﻿using BibliotecaAPI.DTOs.Books;
+using BibliotecaAPI.Validations;
 using System.ComponentModel.DataAnnotations;
 
-namespace BibliotecaAPI.DTOs
+namespace BibliotecaAPI.DTOs.Authors
 {
     public class AuthorCreationDTO
     {
