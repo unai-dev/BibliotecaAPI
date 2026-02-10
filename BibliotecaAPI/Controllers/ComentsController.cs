@@ -2,6 +2,7 @@
 using BibliotecaAPI.Data;
 using BibliotecaAPI.DTOs.Coments;
 using BibliotecaAPI.Entitys;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +10,7 @@ namespace BibliotecaAPI.Controllers
 {
     [ApiController]
     [Route("api/books/{bookId:int}/coments")]
+    [Authorize]
     public class ComentsController: ControllerBase
     {
         private readonly AplicationDbContext context;
