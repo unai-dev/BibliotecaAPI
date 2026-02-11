@@ -18,11 +18,13 @@ namespace BibliotecaAPI.Controllers
     {
         private readonly UserManager<IdentityUser> userManager;
         private readonly IConfiguration configuration;
+        private readonly SignInManager<IdentityUser> signInManager;
 
-        public UsersController(UserManager<IdentityUser> userManager, IConfiguration configuration)
+        public UsersController(UserManager<IdentityUser> userManager, IConfiguration configuration, SignInManager<IdentityUser> signInManager)
         {
             this.userManager = userManager;
             this.configuration = configuration;
+            this.signInManager = signInManager;
         }
 
         [HttpPost("register")]
@@ -52,6 +54,29 @@ namespace BibliotecaAPI.Controllers
             }
         }
 
+        [HttpPost("login")]
+        [AllowAnonymous]
+        public async Task<ActionResult<AuthResponseDTO>> Login(UserCredentialsDTO userCredentials)
+        {
+            var user = await userManager.FindByEmailAsync(userCredentials.Email);
+
+            if (user is null)
+            {
+                return ReturnIncorrectLogin();
+            }
+
+            var result = await signInManager.CheckPasswordSignInAsync(user, userCredentials.Password!,
+                lockoutOnFailure: false);
+
+            if (result.Succeeded) return await BuildToken(userCredentials);
+            else return ReturnIncorrectLogin();
+        }
+         
+        private ActionResult ReturnIncorrectLogin()
+        {
+            ModelState.AddModelError(string.Empty, "Incorrect Login");
+            return ValidationProblem();
+        }
         private async Task<AuthResponseDTO> BuildToken(UserCredentialsDTO userCredentialsDTO)
         {
             var claims = new List<Claim>
