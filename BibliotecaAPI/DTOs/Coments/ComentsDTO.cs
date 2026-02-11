@@ -8,5 +8,7 @@ namespace BibliotecaAPI.DTOs.Coments
         public Guid Id { get; set; }
         public required string Body { get; set; }
         public DateTime PublicDate { get; set; }
+        public required string UserId { get; set; }
+        public required string UserEmail { get; set; }
     }
 }

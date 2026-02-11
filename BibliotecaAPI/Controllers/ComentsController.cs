@@ -32,7 +32,10 @@ namespace BibliotecaAPI.Controllers
                 return NotFound();
             }
 
-            var coments = await context.Coments.Where(x => x.BookId == bookId).OrderByDescending(x => x.PublicDate).ToListAsync();
+            var coments = await context.Coments.Include(u => u.User)
+                .Where(x => x.BookId == bookId)
+                .OrderByDescending(x => x.PublicDate)
+                .ToListAsync();
             return mapper.Map<List<ComentsDTO>>(coments);
 
 
@@ -41,7 +44,7 @@ namespace BibliotecaAPI.Controllers
         [HttpGet("{id}", Name = "GetComent")]
         public async Task<ActionResult<ComentsDTO>> Get(Guid id)
         {
-            var coment = await context.Coments.FirstOrDefaultAsync(x => x.Id == id);
+            var coment = await context.Coments.Include(u => u.User).FirstOrDefaultAsync(x => x.Id == id);
 
             if (coment is null)
             {

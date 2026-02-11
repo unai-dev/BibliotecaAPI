@@ -1,5 +1,6 @@
 using BibliotecaAPI.Data;
 using BibliotecaAPI.Middlewares;
+using BibliotecaAPI.Services;
 using BibliotecaAPI.Utils;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,14 +17,18 @@ builder.Services.AddDbContext<AplicationDbContext>(options => options.UseSqlServ
 
 // AUTH & AUTORIZE CONFIG
 builder.Services.AddIdentityCore<IdentityUser>()
+
     .AddEntityFrameworkStores<AplicationDbContext>()
     .AddDefaultTokenProviders();
+
 builder.Services.AddScoped<UserManager<IdentityUser>>();
 builder.Services.AddScoped<SignInManager<IdentityUser>>();
+builder.Services.AddTransient<IUsersService, UsersService>();
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthentication().AddJwtBearer(o =>
 {
-    o.MapInboundClaims = false; // not change autoclaim
+    o.MapInboundClaims = false;
     o.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = false,
@@ -38,9 +43,9 @@ builder.Services.AddAuthentication().AddJwtBearer(o =>
 });
 
 
-var app = builder.Build();
-
 // MIDDLEWARERS AREA
+
+var app = builder.Build();
 
 app.UseLoggerRequest();
 app.UseBlockedPath();
