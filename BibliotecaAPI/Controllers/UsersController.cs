@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BibliotecaAPI.Data;
 using BibliotecaAPI.DTOs.Users;
+using BibliotecaAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -19,12 +20,15 @@ namespace BibliotecaAPI.Controllers
         private readonly UserManager<IdentityUser> userManager;
         private readonly IConfiguration configuration;
         private readonly SignInManager<IdentityUser> signInManager;
+        private readonly IUsersService usersService;
 
-        public UsersController(UserManager<IdentityUser> userManager, IConfiguration configuration, SignInManager<IdentityUser> signInManager)
+        public UsersController(UserManager<IdentityUser> userManager, 
+            IConfiguration configuration, SignInManager<IdentityUser> signInManager, IUsersService usersService)
         {
             this.userManager = userManager;
             this.configuration = configuration;
             this.signInManager = signInManager;
+            this.usersService = usersService;
         }
 
         [HttpPost("register")]
@@ -71,7 +75,21 @@ namespace BibliotecaAPI.Controllers
             if (result.Succeeded) return await BuildToken(userCredentials);
             else return ReturnIncorrectLogin();
         }
-         
+
+        [HttpGet("reload")]
+        public async Task<ActionResult<AuthResponseDTO>> ReloadToken()
+        {
+            var user = await usersService.GetUser();
+
+            if (user is null) return NotFound();
+
+            var userCredentialsDTO = new UserCredentialsDTO { Email = user.Email!};
+
+            var response = await BuildToken(userCredentialsDTO);
+
+            return response;
+        }
+
         private ActionResult ReturnIncorrectLogin()
         {
             ModelState.AddModelError(string.Empty, "Incorrect Login");

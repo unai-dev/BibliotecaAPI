@@ -2,6 +2,7 @@
 using BibliotecaAPI.Data;
 using BibliotecaAPI.DTOs.Coments;
 using BibliotecaAPI.Entitys;
+using BibliotecaAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,11 +16,13 @@ namespace BibliotecaAPI.Controllers
     {
         private readonly AplicationDbContext context;
         private readonly IMapper mapper;
+        private readonly IUsersService usersService;
 
-        public ComentsController(AplicationDbContext context, IMapper mapper)
+        public ComentsController(AplicationDbContext context, IMapper mapper, IUsersService usersService)
         {
             this.context = context;
             this.mapper = mapper;
+            this.usersService = usersService;
         }
 
         [HttpGet]
@@ -66,10 +69,17 @@ namespace BibliotecaAPI.Controllers
                 return NotFound();
             }
 
+            var user = await usersService.GetUser();
+
+            if (user is null) return NotFound();
+
+
+
             var coment = mapper.Map<Coments>(comentaCreeationDto);
 
             coment.BookId = bookId;
             coment.PublicDate = DateTime.UtcNow;
+            coment.UserId = user.Id;
             context.Add(coment);
             await context.SaveChangesAsync();
 
@@ -87,12 +97,17 @@ namespace BibliotecaAPI.Controllers
                 return NotFound();
             }
 
-            var registers = await context.Coments.Where(x => x.Id == id).ExecuteDeleteAsync();
+            var user = await usersService.GetUser();
+            if (user is null) return NotFound();
 
-            if (registers == 0)
-            {
-                return NotFound();
-            }
+            var comentDB = await context.Coments.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (comentDB is null) return NotFound();
+
+            if (comentDB.UserId != user.Id) return Forbid();
+
+            context.Remove(comentDB);
+            await context.SaveChangesAsync();
 
             return NoContent();
         }
