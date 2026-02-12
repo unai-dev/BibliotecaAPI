@@ -42,6 +42,11 @@ builder.Services.AddAuthentication().AddJwtBearer(o =>
     };
 });
 
+builder.Services.AddAuthorization(o =>
+{
+    o.AddPolicy("isadmin", policy => policy.RequireClaim("isadmin"));
+});
+
 
 // MIDDLEWARERS AREA
 

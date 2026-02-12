@@ -14,7 +14,6 @@ namespace BibliotecaAPI.Controllers
 {
     [ApiController]
     [Route("api/users")]
-    [Authorize]
     public class UsersController: ControllerBase
     {
         private readonly UserManager<IdentityUser> userManager;
@@ -32,7 +31,6 @@ namespace BibliotecaAPI.Controllers
         }
 
         [HttpPost("register")]
-        [AllowAnonymous]
         public async Task<ActionResult<AuthResponseDTO>> Register(UserCredentialsDTO userCredentialsDTO)
         {
             var user = new IdentityUser
@@ -59,7 +57,6 @@ namespace BibliotecaAPI.Controllers
         }
 
         [HttpPost("login")]
-        [AllowAnonymous]
         public async Task<ActionResult<AuthResponseDTO>> Login(UserCredentialsDTO userCredentials)
         {
             var user = await userManager.FindByEmailAsync(userCredentials.Email);
@@ -77,6 +74,7 @@ namespace BibliotecaAPI.Controllers
         }
 
         [HttpGet("reload")]
+        [Authorize]
         public async Task<ActionResult<AuthResponseDTO>> ReloadToken()
         {
             var user = await usersService.GetUser();
@@ -88,6 +86,30 @@ namespace BibliotecaAPI.Controllers
             var response = await BuildToken(userCredentialsDTO);
 
             return response;
+        }
+
+        [HttpPost("add-admin")]
+        [Authorize(Policy = "isadmin")]
+        public async Task<ActionResult> AddAdmin(EditClaimDTO editClaimDTO)
+        {
+            var user = await userManager.FindByEmailAsync(editClaimDTO.Email);
+
+            if (user is null) return NotFound();
+
+            await userManager.AddClaimAsync(user, new Claim("isadmin", "true"));
+            return NoContent();
+        }
+
+        [HttpPost("remove-admin")]
+        [Authorize(Policy = "isadmin")]
+        public async Task<ActionResult> RemoveAdmin(EditClaimDTO editClaimDTO)
+        {
+            var user = await userManager.FindByEmailAsync(editClaimDTO.Email);
+
+            if (user is null) return NotFound();
+
+            await userManager.RemoveClaimAsync(user, new Claim("isadmin", "true"));
+            return NoContent();
         }
 
         private ActionResult ReturnIncorrectLogin()
