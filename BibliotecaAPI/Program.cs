@@ -1,4 +1,5 @@
 using BibliotecaAPI.Data;
+using BibliotecaAPI.Entities;
 using BibliotecaAPI.Middlewares;
 using BibliotecaAPI.Services;
 using BibliotecaAPI.Utils;
@@ -16,13 +17,13 @@ builder.Services.AddControllers().AddNewtonsoftJson();
 builder.Services.AddDbContext<AplicationDbContext>(options => options.UseSqlServer("name=DefaultConnection"));
 
 // AUTH & AUTORIZE CONFIG
-builder.Services.AddIdentityCore<IdentityUser>()
+builder.Services.AddIdentityCore<User>()
 
     .AddEntityFrameworkStores<AplicationDbContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddScoped<UserManager<IdentityUser>>();
-builder.Services.AddScoped<SignInManager<IdentityUser>>();
+builder.Services.AddScoped<UserManager<User>>();
+builder.Services.AddScoped<SignInManager<User>>();
 builder.Services.AddTransient<IUsersService, UsersService>();
 
 builder.Services.AddHttpContextAccessor();

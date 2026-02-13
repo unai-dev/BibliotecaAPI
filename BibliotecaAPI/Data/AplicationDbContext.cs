@@ -1,10 +1,11 @@
-﻿using BibliotecaAPI.Entitys;
+﻿using BibliotecaAPI.Entities;
+using BibliotecaAPI.Entitys;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BibliotecaAPI.Data
 {
-    public class AplicationDbContext : IdentityDbContext
+    public class AplicationDbContext : IdentityDbContext<User>
     {
         public AplicationDbContext(DbContextOptions options) : base(options)
         {

@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using BibliotecaAPI.Data;
 using BibliotecaAPI.DTOs.Users;
+using BibliotecaAPI.Entities;
 using BibliotecaAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -16,24 +18,38 @@ namespace BibliotecaAPI.Controllers
     [Route("api/users")]
     public class UsersController: ControllerBase
     {
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly UserManager<User> userManager;
         private readonly IConfiguration configuration;
-        private readonly SignInManager<IdentityUser> signInManager;
+        private readonly SignInManager<User> signInManager;
         private readonly IUsersService usersService;
+        private readonly AplicationDbContext context;
+        private readonly IMapper mapper;
 
-        public UsersController(UserManager<IdentityUser> userManager, 
-            IConfiguration configuration, SignInManager<IdentityUser> signInManager, IUsersService usersService)
+        public UsersController(UserManager<User> userManager, 
+            IConfiguration configuration, SignInManager<User> signInManager, IUsersService usersService,
+            AplicationDbContext context, IMapper mapper)
         {
             this.userManager = userManager;
             this.configuration = configuration;
             this.signInManager = signInManager;
             this.usersService = usersService;
+            this.context = context;
+            this.mapper = mapper;
+        }
+
+        [HttpGet]
+        [Authorize(Policy ="isadmin")]
+        public async Task<IEnumerable<UserDTO>> Get()
+        {
+            var users = await context.Users.ToListAsync();
+            var usersDTO = mapper.Map<IEnumerable<UserDTO>>(users);
+            return usersDTO;
         }
 
         [HttpPost("register")]
         public async Task<ActionResult<AuthResponseDTO>> Register(UserCredentialsDTO userCredentialsDTO)
         {
-            var user = new IdentityUser
+            var user = new User
             {
                 UserName = userCredentialsDTO.Email,
                 Email = userCredentialsDTO.Email,
@@ -109,6 +125,21 @@ namespace BibliotecaAPI.Controllers
             if (user is null) return NotFound();
 
             await userManager.RemoveClaimAsync(user, new Claim("isadmin", "true"));
+            return NoContent();
+        }
+
+        [HttpPut]
+        [Authorize]
+        public async Task<ActionResult> Put(UpdateUserDTO updateUserDTO)
+        {
+            var user = await usersService.GetUser();
+
+            if (user is null) return NotFound();
+
+            user.Birthday = updateUserDTO.Birthday;
+
+            await userManager.UpdateAsync(user);
+
             return NoContent();
         }
 

@@ -3,6 +3,8 @@ using BibliotecaAPI.DTOs.Authors;
 using BibliotecaAPI.DTOs.AuthorsBooks;
 using BibliotecaAPI.DTOs.Books;
 using BibliotecaAPI.DTOs.Coments;
+using BibliotecaAPI.DTOs.Users;
+using BibliotecaAPI.Entities;
 using BibliotecaAPI.Entitys;
 
 namespace BibliotecaAPI.Utils
@@ -41,6 +43,8 @@ namespace BibliotecaAPI.Utils
             CreateMap<ComentsCreationDTO, Coments>();
             CreateMap<Coments, ComentsDTO>()
                 .ForMember(dto => dto.UserEmail, config => config.MapFrom(ent => ent.User!.Email));
+
+            CreateMap<User, UserDTO>();
 
         }
 

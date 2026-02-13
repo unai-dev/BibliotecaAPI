@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using BibliotecaAPI.Entities;
+using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 
 namespace BibliotecaAPI.Entitys
@@ -14,7 +15,7 @@ namespace BibliotecaAPI.Entitys
         public int BookId { get; set; }
         public Book? Book { get; set; }
         public required string UserId { get; set; }
-        public IdentityUser? User { get; set; }
+        public User? User { get; set; }
 
         
     }
