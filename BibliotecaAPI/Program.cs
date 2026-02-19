@@ -14,6 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 // SERVICES AREA
 var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
 
+builder.Services.AddDataProtection();
+
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddControllers().AddNewtonsoftJson();
 builder.Services.AddDbContext<AplicationDbContext>(options => options.UseSqlServer("name=DefaultConnection"));

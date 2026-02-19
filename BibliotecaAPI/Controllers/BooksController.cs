@@ -4,6 +4,7 @@ using BibliotecaAPI.DTOs.AuthorsBooks;
 using BibliotecaAPI.DTOs.Books;
 using BibliotecaAPI.Entitys;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,11 +18,43 @@ namespace BibliotecaAPI.Controllers
     {
         private readonly AplicationDbContext context;
         private readonly IMapper mapper;
+        private readonly ITimeLimitedDataProtector protectorDateTimeLimit;
 
-        public BooksController(AplicationDbContext context, IMapper mapper)
+        public BooksController(AplicationDbContext context, IMapper mapper, IDataProtectionProvider protectionProvider)
         {
             this.context = context;
             this.mapper = mapper;
+            protectorDateTimeLimit = protectionProvider.CreateProtector("BooksController").ToTimeLimitedDataProtector();
+        }
+
+        [HttpGet("list/get-token")]
+        public ActionResult GetTokenList()
+        {
+            var textPlane = Guid.NewGuid().ToString();
+            var token = protectorDateTimeLimit.Protect(textPlane, lifetime: TimeSpan.FromSeconds(30));
+            var url = Url.RouteUrl("GetTokenListBooks", new { token }, "https");
+
+            return Ok(new { url });
+        }
+
+        [HttpGet("list/{token}", Name ="GetTokenListBooks")]
+        [AllowAnonymous]
+        public async Task<ActionResult> GetTokenListBooks(string token)
+        {
+            try
+            {
+                protectorDateTimeLimit.Unprotect(token);
+            } catch
+            {
+                ModelState.AddModelError(nameof(token), "Token has expired");
+                return ValidationProblem();
+            }
+
+            var books = await context.Books.ToListAsync();
+
+            var booksDTO = mapper.Map<IEnumerable<BooksDTO>>(books);
+
+            return Ok(booksDTO);
         }
 
         [HttpGet]
