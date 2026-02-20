@@ -35,6 +35,7 @@ builder.Services.AddIdentityCore<User>()
 builder.Services.AddScoped<UserManager<User>>();
 builder.Services.AddScoped<SignInManager<User>>();
 builder.Services.AddTransient<IUsersService, UsersService>();
+builder.Services.AddTransient<IHashService, HashService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthentication().AddJwtBearer(o =>
